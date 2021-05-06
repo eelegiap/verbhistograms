@@ -172,6 +172,7 @@ function chart(csv) {
 
                 var thiscx = get_cx(d)
                 var windowSize = d.data.WindowSize
+                d3.select('#windowsize').text(windowSize)
                 d3.selectAll('.sentence').remove()
                 var sentences = sentencedata[windowSize][thiscx]
 
@@ -185,12 +186,14 @@ function chart(csv) {
                 var classSelection = d3.selectAll('.'+formatKeyClass(thiscx))
                 d3.selectAll('g.layer').attr('opacity',.1)
                 d3.selectAll('.legend').attr('opacity',.1)
+                d3.selectAll('.text').attr('opacity',.1)
                 classSelection.attr('opacity',1)
             }).on('mouseout', function(d) {
                 var thiscx = get_cx(d)
                 var classSelection = d3.selectAll('.'+formatKeyClass(thiscx))
                 d3.selectAll('g.layer').attr('opacity',1)
                 d3.selectAll('.legend').attr('opacity',1)
+                d3.selectAll('.text').attr('opacity',1)
                 classSelection.attr('opacity',1)
             })
 
@@ -290,12 +293,14 @@ function chart(csv) {
                 var thisclass = selected.attr('class').replace('legend ','').replace('layer ','')
                 d3.selectAll('g.layer').attr('opacity',.1)
                 d3.selectAll('.legend').attr('opacity',.1)
+                d3.selectAll('.text').attr('opacity',.1)
                 d3.selectAll('.' + thisclass).attr('opacity',1)
             }
             function legendMouseout(selected) {
                 var thisclass = selected.attr('class').replace('legend ','').replace('layer ','')
                 d3.selectAll('g.layer').attr('opacity',1)
                 d3.selectAll('.legend').attr('opacity',1)
+                d3.selectAll('.text').attr('opacity',1)
                 d3.selectAll('.' + thisclass).attr('opacity',1)
             }
             function formatKeyClass(key) {

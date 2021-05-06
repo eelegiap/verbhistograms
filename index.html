@@ -32,10 +32,10 @@
 			pointer-events: none;
 		}
 		.sentence {
-			font-size: 15px
+			font-size: 16
 		}
-		.noprep+nom {
-			opacity: 0;
+		select {
+			font-size: 16
 		}
 	</style>
 </head>
@@ -44,11 +44,10 @@
 	<div class='row'>
 		<div class='col-md-6'>
 			<h3>Verb is <span id='verblabel'></span></h3>
-
-			<svg id="chart" width="750" height="500"></svg>
-		
+			<p style='font-size: 16'>Counts of different constructions beginning at different distances from the verb</p>
 			Select verb:
 			<select id="verb"></select>
+			<svg id="chart" width="750" height="500"></svg>
 		
 			<input type="checkbox" id="sort" style='display: none;'>
 			<!-- Toggle sort -->
@@ -57,7 +56,7 @@
 			<div id='#legend'></div>
 		</div>
 		<div class='col-md-5'>
-			<h3>Sentences with <span id='cx'></span></h3>
+			<h3>Sentences with <span id='cx'></span> at <span id='windowsize'></span></h3>
 			<div id='sentences'></div>
 		</div>
 	</div>
