@@ -150,7 +150,6 @@ function chart(csv) {
                 // cursor mouseover on rectangles
                 .on('mouseover', d => {
 
-                    d3.select('#cx').text(d.key)
                     div
                         .transition()
                         .duration(200)
@@ -167,10 +166,9 @@ function chart(csv) {
                         .style('opacity', 0);
                 });
 
-            // get windowsize, cx in order to display sentences
-            d3.selectAll('rect').on('mouseover', function (d) {
-
+            d3.selectAll('rect').on('click', function(d) {
                 var thiscx = get_cx(d)
+                d3.select('#cx').text(thiscx)
                 var windowSize = d.data.WindowSize
                 d3.select('#windowsize').text(windowSize)
                 d3.selectAll('.sentence').remove()
@@ -182,6 +180,11 @@ function chart(csv) {
                         .attr('class', 'sentence')
                         .text(sent)
                 })
+            })
+            // get windowsize, cx in order to display sentences
+            d3.selectAll('rect').on('mouseover', function (d) {
+
+                var thiscx = get_cx(d)
 
                 var classSelection = d3.selectAll('.'+formatKeyClass(thiscx))
                 d3.selectAll('g.layer').attr('opacity',.1)
