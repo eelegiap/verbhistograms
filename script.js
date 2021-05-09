@@ -331,7 +331,16 @@ function chart(csv) {
                 legendMouseover(d3.select(this))
             }).on('mouseout', function() {
                 legendMouseout(d3.select(this))
+            }).on('click', function(d) {
+                var thisSelection = d3.select(this)
+                console.log(thisSelection.attr('class'))
+                if (selectedCX != false) {
+                    update(input,500,false)
+                } else {
+                    update(input,200,d)
+                } 
             })
+
             d3.selectAll('text').on('mouseover', function(d) {
                 legendMouseover(d3.select(this))
             }).on('mouseout', function() {
@@ -369,6 +378,12 @@ function chart(csv) {
         .on("change", function () {
             update(this.value, 750, false)
         })
+    d3.select('#randomize').on('click', function() {
+        var randomIndex = Math.floor(Math.random() * verb.length)
+        var randomVerb = verb[randomIndex]
+        d3.select('#verb').property('value', randomVerb);
+        update(randomVerb, 750, false)
+    })
 
     var checkbox = d3.select("#sort")
         .on("click", function () {

@@ -31,12 +31,10 @@
 			border: 2px solid black;
 			pointer-events: none;
 		}
-		.sentence {
+		.sentence, .verb, select, button {
 			font-size: 16
 		}
-		select {
-			font-size: 16
-		}
+
 	</style>
 </head>
 
@@ -45,10 +43,13 @@
 		<div class='col-md-6'>
 			<h3>Verb is <span id='verblabel'></span></h3>
 			<p style='font-size: 16'>Counts of different constructions beginning at different distances from the verb</p>
-			Select verb:
+			<span class='verb'>Select verb:</span>
 			<select id="verb"></select>
+
+			<button type="button" id='randomize'>Randomize verb</button>
+
 			<svg id="chart" width="750" height="500"></svg>
-		
+
 			<input type="checkbox" id="sort" style='display: none;'>
 			<!-- Toggle sort -->
 		</div>
