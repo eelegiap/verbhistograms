@@ -367,12 +367,12 @@ function chart(csv) {
 
     var select = d3.select("#verb")
         .on("change", function () {
-            update(this.value, 750)
+            update(this.value, 750, false)
         })
 
     var checkbox = d3.select("#sort")
         .on("click", function () {
-            update(select.property("value"), 750)
+            update(select.property("value"), 750, false)
         })
 
 }
