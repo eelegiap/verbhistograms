@@ -11,26 +11,25 @@ function chart(csv) {
         return a.localeCompare(b);
     })
 
-    var d3_category20 = ['#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe', '#008080', '#e6beff', '#9a6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#808080', '#ffffff', '#000000']
-    var colors = [
-        'saddlebrown', 'navy', 'black', 'lightskyblue',
-        'orangered', 'gold', 'darkgreen', 'lightgreen',
-        'cornflower', 'hotpink', 'mediumpurple', 'silver',
-        'aqua',' lime','magenta','plum','peachpuff','firebrick',
-        'teal','blue','goldenrod','slategray'
-    ]
-    var color_scheme = []
-    keys.forEach(function(cx, i) {
-        var color = d3.interpolateTurbo(i/(keys.length + 1))
-        color_scheme.push(color)
-    })
-    // console.log(color_scheme)
-    color_scheme = color_scheme.sort(() => Math.random() - 0.5)
+    // var d3_category20 = ['#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe', '#008080', '#e6beff', '#9a6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#808080', '#ffffff', '#000000']
+    // var colors = [
+    //     'saddlebrown', 'navy', 'black', 'lightskyblue',
+    //     'orangered', 'gold', 'darkgreen', 'lightgreen',
+    //     'cornflower', 'hotpink', 'mediumpurple', 'silver',
+    //     'aqua',' lime','magenta','plum','peachpuff','firebrick',
+    //     'teal','blue','goldenrod','slategray'
+    // ]
+    // var color_scheme = []
+    // keys.forEach(function(cx, i) {
+    //     var color = d3.interpolateTurbo(i/(keys.length + 1))
+    //     color_scheme.push(color)
+    // })
+    // color_scheme = color_scheme.sort(() => Math.random() - 0.5)
+
     var z =
         d3.scaleOrdinal()
             .domain(keys)
-            .range(d3.schemePaired)
-
+            .range(d3.schemeTableau10)
 
     var options = d3.select("#verb").selectAll("option")
         .data(verb)
@@ -60,20 +59,45 @@ function chart(csv) {
 
     var startingverb = 'помочь'
     d3.select('#verb').property('value', startingverb);
-    update(startingverb,0)
+    // write the graph!!!
+    update(startingverb,0, false)
 
-    function update(input, speed) {
-        d3.json('jsondata/' + input + '.json').then(sentdata => withSentences(sentdata))
+
+
+
+// update function // 
+    function update(input, speed, selectedCX) {
+        d3.json('data/' + input + '.json').then(sentdata => withSentences(sentdata))
         function withSentences(sentencedata) {
 
             d3.select('#verblabel').text(input)
-
+            d3.selectAll('.destroyonupdate').remove()
+            
             var data = csv.filter(f => f.Verb == input)
+
+            // console.log('data', data)
+            // deleting datapoints which aren't for selected AP
+            if (selectedCX != false) {
+                var newData = []
+                data.forEach(function(w) {
+                    var newObj = new Object
+                    for (const [key, value] of Object.entries(w)) {
+                        if ((key == selectedCX) || ['Verb', 'WindowSize','total'].includes(key)) {
+                            newObj[key] = value
+                        } else {
+                            newObj[key] = 0
+                        }                    
+                    }
+                    newData.push(newObj)
+                })
+                data = newData
+            }
 
             data.forEach(function (d) {
                 d.total = d3.sum(keys, k => +d[k])
                 return d
             })
+
 
             var cxxObj = new Object()
             data.forEach(function (w) {
@@ -81,6 +105,7 @@ function chart(csv) {
                     if (value > 0 && !(['WindowSize', 'total'].includes(key))) {
                         cxxObj[key] = 0
                     }
+                    
                 }
             })
             data.forEach(function (w) {
@@ -93,6 +118,8 @@ function chart(csv) {
             var cxxList = Object.entries(cxxObj);
             cxxList = cxxList.sort((a, b) => parseFloat(b[1]) - parseFloat(a[1]));
             cxx = cxxList.map(elt => elt[0]);
+
+
 
             y.domain([0, d3.max(data, d => d3.sum(keys, k => +d[k]))]).nice();
 
@@ -187,9 +214,9 @@ function chart(csv) {
                 var thiscx = get_cx(d)
 
                 var classSelection = d3.selectAll('.'+formatKeyClass(thiscx))
-                d3.selectAll('g.layer').attr('opacity',.1)
-                d3.selectAll('.legend').attr('opacity',.1)
-                d3.selectAll('.text').attr('opacity',.1)
+                d3.selectAll('g.layer').attr('opacity',.25)
+                d3.selectAll('.legend').attr('opacity',.25)
+                d3.selectAll('.text').attr('opacity',.25)
                 classSelection.attr('opacity',1)
             }).on('mouseout', function(d) {
                 var thiscx = get_cx(d)
@@ -226,13 +253,30 @@ function chart(csv) {
             text.exit().remove()
 
             text.enter().append("text")
-                .attr("class", "text")
+                .attr("class", function(d,i) {
+                    if (i != 3) {
+                        return "text"
+                    } else {
+                        return 'destroyonupdate'
+                    }
+                })
                 .attr("text-anchor", "middle")
                 .merge(text)
                 .transition().duration(speed)
                 .attr("x", d => x(d.WindowSize) + x.bandwidth() / 2)
                 .attr("y", d => y(d.total) - 5)
-                .text(d => d.total)
+                .attr('transform', function(d,i) {
+                    if (i == 3) {
+                        return 'translate(0,35)'
+                    }
+                })
+                .text(function(d, i) {
+                    if (i != 3) {
+                        return d.total
+                    } else {
+                        return input
+                    }
+                })
 
             var size = 20
 
@@ -280,6 +324,8 @@ function chart(csv) {
                 .attr("text-anchor", "left")
                 .style("alignment-baseline", "middle")
                 .attr('class',function(d,i) { return 'legend ' + formatKeyClass(d)})
+            
+
 
             d3.selectAll('circle').on('mouseover', function(d) {
                 legendMouseover(d3.select(this))
@@ -290,13 +336,20 @@ function chart(csv) {
                 legendMouseover(d3.select(this))
             }).on('mouseout', function() {
                 legendMouseout(d3.select(this))
+            }).on('click', function(d) {
+                var thisSelection = d3.select(this)
+                console.log(thisSelection.attr('class'))
+                if (selectedCX != false) {
+                    update(input,500,false)
+                } else {
+                    update(input,200,d)
+                }
             })
-
             function legendMouseover(selected) {
                 var thisclass = selected.attr('class').replace('legend ','').replace('layer ','')
-                d3.selectAll('g.layer').attr('opacity',.1)
-                d3.selectAll('.legend').attr('opacity',.1)
-                d3.selectAll('.text').attr('opacity',.1)
+                d3.selectAll('g.layer').attr('opacity',.25)
+                d3.selectAll('.legend').attr('opacity',.25)
+                d3.selectAll('.text').attr('opacity',.25)
                 d3.selectAll('.' + thisclass).attr('opacity',1)
             }
             function legendMouseout(selected) {
