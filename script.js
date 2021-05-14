@@ -1,4 +1,4 @@
-d3.csv("csvdata.csv").then(d => chart(d))
+d3.csv("csvdata1.csv").then(d => chart(d))
 
 function chart(csv) {
 
@@ -67,7 +67,7 @@ function chart(csv) {
 
 // update function // 
     function update(input, speed, selectedCX) {
-        d3.json('data/' + input + '.json').then(sentdata => withSentences(sentdata))
+        d3.json('updatedsentdata/' + input + '.json').then(sentdata => withSentences(sentdata))
         function withSentences(sentencedata) {
 
             d3.select('#verblabel').text(input)
