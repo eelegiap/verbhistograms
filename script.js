@@ -210,9 +210,7 @@ function chart(csv) {
             })
             // get windowsize, cx in order to display sentences
             d3.selectAll('rect').on('mouseover', function (d) {
-
                 var thiscx = get_cx(d)
-
                 var classSelection = d3.selectAll('.'+formatKeyClass(thiscx))
                 d3.selectAll('g.layer').attr('opacity',.25)
                 d3.selectAll('.legend').attr('opacity',.25)
@@ -354,6 +352,8 @@ function chart(csv) {
                     update(input,200,d)
                 }
             })
+
+
             function legendMouseover(selected) {
                 var thisclass = selected.attr('class').replace('legend ','').replace('layer ','')
                 d3.selectAll('g.layer').attr('opacity',.25)
