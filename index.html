@@ -18,7 +18,9 @@
 			/* width: 650px; */
 			font: 12px arial;
 		}
-
+		p {
+			font-size: 16
+		}
 		div.tooltip {
 			color: white;
 			position: absolute;
@@ -43,23 +45,25 @@
 <body>
 	<div class='row'>
 		<div class='col-md-6'>
-			<h3>Verb is <span id='verblabel'></span></h3>
+			<h3>Verb is <span class='verblabel'></span></h3>
 			<p style='font-size: 16'>Counts of different constructions beginning at different distances from the verb</p>
 			<span class='verb'>Select verb:</span>
 			<select id="verb"></select>
-
 			<button type="button" id='randomize'>Randomize verb</button>
+
+			<p style='padding-top: 20'>Most common usage: <span id='cx1'></span> + <span class='verblabel'></span> + <span id='cx2'></span></p>
 
 			<svg id="chart" width="750" height="500"></svg>
 
 			<input type="checkbox" id="sort" style='display: none;'>
 			<!-- Toggle sort -->
+
 		</div>
 		<div class='col-md-1'>
 			<div id='#legend'></div>
 		</div>
 		<div class='col-md-5'>
-			<h3>Sentences with <span id='cx'>...</span> at <span id='windowsize'>...</span></h3>
+			<h3>Sentences with <span class='cx'>...</span> at <span id='windowsize'>...</span></h3>
 			<div id='sentences'></div>
 		</div>
 	</div>

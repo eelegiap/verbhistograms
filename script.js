@@ -1,6 +1,12 @@
 d3.csv('7-29-21csvdata.csv').then(d => chart(d))
 
 function chart(csv) {
+    // Define the div for the tooltip
+    const div = d3
+        .select('body')
+        .append('div')
+        .attr('class', 'tooltip')
+        .style('opacity', 0);
 
     var keys = csv.columns.slice(2);
 
@@ -45,13 +51,13 @@ function chart(csv) {
     var startingverb = 'помочь'
     d3.select('#verb').property('value', startingverb);
     // write the graph!!!
-    update(startingverb,0, false)
+    update(startingverb, 0, false)
 
     var select = d3.select("#verb")
         .on("change", function () {
             update(this.value, 750, false)
         })
-    d3.select('#randomize').on('click', function() {
+    d3.select('#randomize').on('click', function () {
         var randomIndex = Math.floor(Math.random() * verb.length)
         var randomVerb = verb[randomIndex]
         d3.select('#verb').property('value', randomVerb);
@@ -59,26 +65,52 @@ function chart(csv) {
     })
 
 
-// update function // 
+    // update function // 
     function update(input, speed, selectedCX) {
         d3.json('updatedsentdata2/' + input + '.json').then(sentdata => withSentences(sentdata))
         function withSentences(sentencedata) {
-            d3.select('#verblabel').text(input)
+            d3.selectAll('.verblabel').text(input)
             d3.selectAll('.destroyonupdate').remove()
-            
+
             var data = csv.filter(f => f.Verb == input)
 
+            // get most prevalent constructions
+            // preCX = Object()
+            // postCX = Object()
+            // data.forEach(function(w, i) {
+            //     for (const [key, value] of Object.entries(w)) {
+            //         if (!['Verb', 'WindowSize', 'total'].includes(key)) {
+            //             if (i < 3) {
+            //                 if (preCX[key]) {
+            //                     preCX[key] += +value
+            //                 } else {
+            //                     preCX[key] = +value
+            //                 }
+            //             } else {
+            //                 if (postCX[key]) {
+            //                     postCX[key] += +value
+            //                 } else {
+            //                     postCX[key] = +value
+            //                 }
+            //             }
+            //         }
+            //     }
+            // })
+            // var cx1 = Object.keys(preCX).reduce(function(a, b){ return preCX[a] > preCX[b] ? a : b });
+            // var cx2 = Object.keys(postCX).reduce(function(a, b){ return postCX[a] > postCX[b] ? a : b });
+            // console.log(cx1, cx2)
+            // 
             // deleting datapoints which aren't for selected AP
             if (selectedCX != false) {
                 var newData = []
-                data.forEach(function(w) {
+                data.forEach(function (w) {
                     var newObj = new Object
                     for (const [key, value] of Object.entries(w)) {
-                        if ((key == selectedCX) || ['Verb', 'WindowSize','total'].includes(key)) {
+                        if ((key == selectedCX) || ['Verb', 'WindowSize', 'total'].includes(key)) {
                             newObj[key] = value
                         } else {
                             newObj[key] = 0
-                        }                    
+                        }
                     }
                     newData.push(newObj)
                 })
@@ -94,7 +126,7 @@ function chart(csv) {
                     if (value > 0 && !(['WindowSize', 'total'].includes(key))) {
                         cxxObj[key] = 0
                     }
-                    
+
                 }
             })
             data.forEach(function (w) {
@@ -130,11 +162,11 @@ function chart(csv) {
 
             group.enter().append("g")
                 // .classed("layer", true)
-                .attr('class', function(d) {
+                .attr('class', function (d) {
                     return 'layer ' + formatKeyClass(d.key)
                 })
                 .attr("fill", d => z(d.key))
-                // .attr('class', function(d) {return d.key});
+            // .attr('class', function(d) {return d.key});
 
             var bars = svg.selectAll("g.layer").selectAll("rect")
                 .data(d => d, e => e.data.WindowSize)
@@ -151,12 +183,7 @@ function chart(csv) {
                 .attr("height", d => y(d[0]) - y(d[1]))
 
 
-            // Define the div for the tooltip
-            const div = d3
-                .select('body')
-                .append('div')
-                .attr('class', 'tooltip')
-                .style('opacity', 0);
+
 
             // need to create dictionary which maps from rectangle to window + cx
             d3.selectAll('g.layer')
@@ -179,20 +206,20 @@ function chart(csv) {
                         .style('opacity', 0);
                 });
 
-            d3.selectAll('rect').on('click', function(d) {
+            d3.selectAll('rect').on('click', function (d) {
                 var thiscx = get_cx(d)
                 var windowSize = d.data.WindowSize
                 displaySents(thiscx, windowSize)
-            }).on('dblclick', function(d) {
+            }).on('dblclick', function (d) {
                 if (selectedCX != false) {
-                    update(input,500,false)
+                    update(input, 500, false)
                 } else {
-                    update(input,200,get_cx(d))
-                } 
+                    update(input, 200, get_cx(d))
+                }
             })
 
             function displaySents(cx, windowSize) {
-                d3.select('#cx').text(cx)
+                d3.select('.cx').text(cx)
                 d3.select('#windowsize').text(windowSize)
                 d3.selectAll('.sentence').remove()
                 var sentences = sentencedata[windowSize][cx]
@@ -207,18 +234,18 @@ function chart(csv) {
             // get windowsize, cx in order to display sentences
             d3.selectAll('rect').on('mouseover', function (d) {
                 var thiscx = get_cx(d)
-                var classSelection = d3.selectAll('.'+formatKeyClass(thiscx))
-                d3.selectAll('g.layer').attr('opacity',.25)
-                d3.selectAll('.legend').attr('opacity',.25)
-                d3.selectAll('.text').attr('opacity',.25)
-                classSelection.attr('opacity',1)
-            }).on('mouseout', function(d) {
+                var classSelection = d3.selectAll('.' + formatKeyClass(thiscx))
+                d3.selectAll('g.layer').attr('opacity', .25)
+                d3.selectAll('.legend').attr('opacity', .25)
+                d3.selectAll('.text').attr('opacity', .25)
+                classSelection.attr('opacity', 1)
+            }).on('mouseout', function (d) {
                 var thiscx = get_cx(d)
-                var classSelection = d3.selectAll('.'+formatKeyClass(thiscx))
-                d3.selectAll('g.layer').attr('opacity',1)
-                d3.selectAll('.legend').attr('opacity',1)
-                d3.selectAll('.text').attr('opacity',1)
-                classSelection.attr('opacity',1)
+                var classSelection = d3.selectAll('.' + formatKeyClass(thiscx))
+                d3.selectAll('g.layer').attr('opacity', 1)
+                d3.selectAll('.legend').attr('opacity', 1)
+                d3.selectAll('.text').attr('opacity', 1)
+                classSelection.attr('opacity', 1)
             })
 
             function get_cx(d) {
@@ -247,7 +274,7 @@ function chart(csv) {
             text.exit().remove()
 
             text.enter().append("text")
-                .attr("class", function(d,i) {
+                .attr("class", function (d, i) {
                     if (i != 3) {
                         return "text"
                     } else {
@@ -259,12 +286,12 @@ function chart(csv) {
                 .transition().duration(speed)
                 .attr("x", d => x(d.WindowSize) + x.bandwidth() / 2)
                 .attr("y", d => y(d.total) - 5)
-                .attr('transform', function(d,i) {
+                .attr('transform', function (d, i) {
                     if (i == 3) {
                         return 'translate(0,35)'
                     }
                 })
-                .text(function(d, i) {
+                .text(function (d, i) {
                     if (i != 3) {
                         return d.total
                     } else {
@@ -283,19 +310,21 @@ function chart(csv) {
             circles
                 .enter().append("circle")
                 // .attr('class', function(d, i) {'legend'})
-                .attr("cx", function(d, i) {
+                .attr("cx", function (d, i) {
                     if (i > 16) {
                         return width - 20
                     }
-                    return width - 140})
-                .attr("cy", function (d, i) { 
+                    return width - 140
+                })
+                .attr("cy", function (d, i) {
                     if (i > 16) {
                         return 25 + i * 25 - 425
                     }
-                    return 25 + i * 25 }) // 100 is where the first dot appears. 25 is the distance between dots
+                    return 25 + i * 25
+                }) // 100 is where the first dot appears. 25 is the distance between dots
                 .attr("r", 7)
                 .style("fill", function (d) { return z(d) })
-                .attr('class',function(d,i) { return 'legend ' + formatKeyClass(d)})
+                .attr('class', function (d, i) { return 'legend ' + formatKeyClass(d) })
 
             // Add one dot in the legend for each name.
             var labels = svg.selectAll("mylabels")
@@ -303,66 +332,68 @@ function chart(csv) {
             labels.exit().remove()
             labels.enter().append("text")
                 // .attr('class', 'legend')
-                .attr("x", function(d, i) {
+                .attr("x", function (d, i) {
                     if (i > 16) {
                         return width - 5
                     }
-                    return width - 125})
-                .attr("y", function (d, i) { 
+                    return width - 125
+                })
+                .attr("y", function (d, i) {
                     if (i > 16) {
                         return 25 + i * 25 - 425
                     }
-                    return 25 + i * 25 }) // 100 is where the first dot appears. 25 is the distance between dots
+                    return 25 + i * 25
+                }) // 100 is where the first dot appears. 25 is the distance between dots
                 .style("fill", function (d) { return z(d) })
                 .text(function (d) { return d })
                 .attr("text-anchor", "left")
                 .style("alignment-baseline", "middle")
-                .attr('class',function(d,i) { return 'legend ' + formatKeyClass(d)})
-            
+                .attr('class', function (d, i) { return 'legend ' + formatKeyClass(d) })
 
 
-            d3.selectAll('circle').on('mouseover', function(d) {
+
+            d3.selectAll('circle').on('mouseover', function (d) {
                 legendMouseover(d3.select(this))
-            }).on('mouseout', function() {
+            }).on('mouseout', function () {
                 legendMouseout(d3.select(this))
-            }).on('click', function(d) {
+            }).on('click', function (d) {
                 var thisSelection = d3.select(this)
                 if (selectedCX != false) {
-                    update(input,500,false)
+                    update(input, 500, false)
                 } else {
-                    update(input,200,d)
-                } 
+                    update(input, 200, d)
+                }
             })
 
-            d3.selectAll('text').on('mouseover', function(d) {
+            d3.selectAll('text').on('mouseover', function (d) {
                 legendMouseover(d3.select(this))
-            }).on('mouseout', function() {
+            }).on('mouseout', function () {
                 legendMouseout(d3.select(this))
-            }).on('click', function(d) {
+            }).on('click', function (d) {
                 var thisSelection = d3.select(this)
                 if (selectedCX != false) {
-                    update(input,500,false)
+                    update(input, 500, false)
                 } else {
-                    update(input,200,d)
+                    update(input, 200, d)
                 }
             })
 
             function legendMouseover(selected) {
-                var thisclass = selected.attr('class').replace('legend ','').replace('layer ','')
-                d3.selectAll('g.layer').attr('opacity',.25)
-                d3.selectAll('.legend').attr('opacity',.25)
-                d3.selectAll('.text').attr('opacity',.25)
-                d3.selectAll('.' + thisclass).attr('opacity',1)
+                var thisclass = selected.attr('class').replace('legend ', '').replace('layer ', '')
+                d3.selectAll('g.layer').attr('opacity', .25)
+                d3.selectAll('.legend').attr('opacity', .25)
+                d3.selectAll('.text').attr('opacity', .25)
+                d3.selectAll('.' + thisclass).attr('opacity', 1)
             }
             function legendMouseout(selected) {
-                var thisclass = selected.attr('class').replace('legend ','').replace('layer ','')
-                d3.selectAll('g.layer').attr('opacity',1)
-                d3.selectAll('.legend').attr('opacity',1)
-                d3.selectAll('.text').attr('opacity',1)
-                d3.selectAll('.' + thisclass).attr('opacity',1)
+                var thisclass = selected.attr('class').replace('legend ', '').replace('layer ', '')
+                d3.selectAll('g.layer').attr('opacity', 1)
+                d3.selectAll('.legend').attr('opacity', 1)
+                d3.selectAll('.text').attr('opacity', 1)
+                d3.selectAll('.' + thisclass).attr('opacity', 1)
             }
             function formatKeyClass(key) {
-                return key.replaceAll('+','').replaceAll(' ','').toLowerCase()
+                return key.replaceAll('/','').replaceAll('+', '').replaceAll(' ', '').toLowerCase()
             }
         }
     }
