@@ -1,4 +1,4 @@
-d3.csv("csvdata1.csv").then(d => chart(d))
+d3.csv('7-29-21csvdata.csv').then(d => chart(d))
 
 function chart(csv) {
 
@@ -10,21 +10,6 @@ function chart(csv) {
     verb.sort(function (a, b) {
         return a.localeCompare(b);
     })
-
-    // var d3_category20 = ['#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe', '#008080', '#e6beff', '#9a6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#808080', '#ffffff', '#000000']
-    // var colors = [
-    //     'saddlebrown', 'navy', 'black', 'lightskyblue',
-    //     'orangered', 'gold', 'darkgreen', 'lightgreen',
-    //     'cornflower', 'hotpink', 'mediumpurple', 'silver',
-    //     'aqua',' lime','magenta','plum','peachpuff','firebrick',
-    //     'teal','blue','goldenrod','slategray'
-    // ]
-    // var color_scheme = []
-    // keys.forEach(function(cx, i) {
-    //     var color = d3.interpolateTurbo(i/(keys.length + 1))
-    //     color_scheme.push(color)
-    // })
-    // color_scheme = color_scheme.sort(() => Math.random() - 0.5)
 
     var z =
         d3.scaleOrdinal()
@@ -62,20 +47,27 @@ function chart(csv) {
     // write the graph!!!
     update(startingverb,0, false)
 
-
+    var select = d3.select("#verb")
+        .on("change", function () {
+            update(this.value, 750, false)
+        })
+    d3.select('#randomize').on('click', function() {
+        var randomIndex = Math.floor(Math.random() * verb.length)
+        var randomVerb = verb[randomIndex]
+        d3.select('#verb').property('value', randomVerb);
+        update(randomVerb, 750, false)
+    })
 
 
 // update function // 
     function update(input, speed, selectedCX) {
-        d3.json('updatedsentdata/' + input + '.json').then(sentdata => withSentences(sentdata))
+        d3.json('updatedsentdata2/' + input + '.json').then(sentdata => withSentences(sentdata))
         function withSentences(sentencedata) {
-
             d3.select('#verblabel').text(input)
             d3.selectAll('.destroyonupdate').remove()
             
             var data = csv.filter(f => f.Verb == input)
 
-            // console.log('data', data)
             // deleting datapoints which aren't for selected AP
             if (selectedCX != false) {
                 var newData = []
@@ -92,13 +84,10 @@ function chart(csv) {
                 })
                 data = newData
             }
-
             data.forEach(function (d) {
                 d.total = d3.sum(keys, k => +d[k])
                 return d
             })
-
-
             var cxxObj = new Object()
             data.forEach(function (w) {
                 for (const [key, value] of Object.entries(w)) {
@@ -119,8 +108,6 @@ function chart(csv) {
             cxxList = cxxList.sort((a, b) => parseFloat(b[1]) - parseFloat(a[1]));
             cxx = cxxList.map(elt => elt[0]);
 
-
-
             y.domain([0, d3.max(data, d => d3.sum(keys, k => +d[k]))]).nice();
 
             svg.selectAll(".y-axis").transition().duration(speed)
@@ -129,7 +116,6 @@ function chart(csv) {
             data.sort(d3.select("#sort").property("checked")
                 ? (a, b) => b.total - a.total
                 : (a, b) => states.indexOf(a.WindowSize) - states.indexOf(b.WindowSize))
-
 
             x.domain(data.map(d => d.WindowSize));
 
@@ -195,19 +181,29 @@ function chart(csv) {
 
             d3.selectAll('rect').on('click', function(d) {
                 var thiscx = get_cx(d)
-                d3.select('#cx').text(thiscx)
                 var windowSize = d.data.WindowSize
+                displaySents(thiscx, windowSize)
+            }).on('dblclick', function(d) {
+                if (selectedCX != false) {
+                    update(input,500,false)
+                } else {
+                    update(input,200,get_cx(d))
+                } 
+            })
+
+            function displaySents(cx, windowSize) {
+                d3.select('#cx').text(cx)
                 d3.select('#windowsize').text(windowSize)
                 d3.selectAll('.sentence').remove()
-                var sentences = sentencedata[windowSize][thiscx]
-
+                var sentences = sentencedata[windowSize][cx]
                 sentences.forEach(function (sent) {
                     d3.select('#sentences')
                         .append('p')
                         .attr('class', 'sentence')
                         .text(sent)
                 })
-            })
+            }
+
             // get windowsize, cx in order to display sentences
             d3.selectAll('rect').on('mouseover', function (d) {
                 var thiscx = get_cx(d)
@@ -331,7 +327,6 @@ function chart(csv) {
                 legendMouseout(d3.select(this))
             }).on('click', function(d) {
                 var thisSelection = d3.select(this)
-                console.log(thisSelection.attr('class'))
                 if (selectedCX != false) {
                     update(input,500,false)
                 } else {
@@ -345,14 +340,12 @@ function chart(csv) {
                 legendMouseout(d3.select(this))
             }).on('click', function(d) {
                 var thisSelection = d3.select(this)
-                console.log(thisSelection.attr('class'))
                 if (selectedCX != false) {
                     update(input,500,false)
                 } else {
                     update(input,200,d)
                 }
             })
-
 
             function legendMouseover(selected) {
                 var thisclass = selected.attr('class').replace('legend ','').replace('layer ','')
@@ -373,21 +366,4 @@ function chart(csv) {
             }
         }
     }
-
-    var select = d3.select("#verb")
-        .on("change", function () {
-            update(this.value, 750, false)
-        })
-    d3.select('#randomize').on('click', function() {
-        var randomIndex = Math.floor(Math.random() * verb.length)
-        var randomVerb = verb[randomIndex]
-        d3.select('#verb').property('value', randomVerb);
-        update(randomVerb, 750, false)
-    })
-
-    var checkbox = d3.select("#sort")
-        .on("click", function () {
-            update(select.property("value"), 750, false)
-        })
-
 }
