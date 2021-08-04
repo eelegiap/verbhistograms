@@ -1,4 +1,4 @@
-d3.csv('7-29-21csvdata.csv').then(d => chart(d))
+d3.csv('8-4-21csvdata.csv').then(d => chart(d))
 
 function chart(csv) {
     // Define the div for the tooltip
@@ -67,7 +67,7 @@ function chart(csv) {
 
     // update function // 
     function update(input, speed, selectedCX) {
-        d3.json('updatedsentdata2/' + input + '.json').then(sentdata => withSentences(sentdata))
+        d3.json('updatedsentdata3/' + input + '.json').then(sentdata => withSentences(sentdata))
         function withSentences(sentencedata) {
             d3.selectAll('.verblabel').text(input)
             d3.selectAll('.destroyonupdate').remove()
@@ -75,30 +75,7 @@ function chart(csv) {
             var data = csv.filter(f => f.Verb == input)
 
             // get most prevalent constructions
-            // preCX = Object()
-            // postCX = Object()
-            // data.forEach(function(w, i) {
-            //     for (const [key, value] of Object.entries(w)) {
-            //         if (!['Verb', 'WindowSize', 'total'].includes(key)) {
-            //             if (i < 3) {
-            //                 if (preCX[key]) {
-            //                     preCX[key] += +value
-            //                 } else {
-            //                     preCX[key] = +value
-            //                 }
-            //             } else {
-            //                 if (postCX[key]) {
-            //                     postCX[key] += +value
-            //                 } else {
-            //                     postCX[key] = +value
-            //                 }
-            //             }
-            //         }
-            //     }
-            // })
-            // var cx1 = Object.keys(preCX).reduce(function(a, b){ return preCX[a] > preCX[b] ? a : b });
-            // var cx2 = Object.keys(postCX).reduce(function(a, b){ return postCX[a] > postCX[b] ? a : b });
-            // console.log(cx1, cx2)
+x
             // 
             // deleting datapoints which aren't for selected AP
             if (selectedCX != false) {
