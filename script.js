@@ -67,7 +67,15 @@ function chart(csv) {
 
     // update function // 
     function update(input, speed, selectedCX) {
+        d3.json('common_constructions.json').then(cxdata => build_cxx(cxdata))
+        function build_cxx(cxdata) {
+            cxdata[0][input].forEach(function(cx,i) {
+                $('#use'+i).text(cx['cx'] + ' (' + cx['data']['counts'] + ')')
+            })
+        }
+
         d3.json('updatedsentdata3/' + input + '.json').then(sentdata => withSentences(sentdata))
+
         function withSentences(sentencedata) {
             d3.selectAll('.verblabel').text(input)
             d3.selectAll('.destroyonupdate').remove()
