@@ -1,4 +1,4 @@
-d3.csv('8-4-21csvdata.csv').then(d => chart(d))
+d3.csv('8-10-21csvdata.csv').then(d => chart(d))
 
 function chart(csv) {
     // Define the div for the tooltip
@@ -74,7 +74,7 @@ function chart(csv) {
             })
         }
 
-        d3.json('updatedsentdata3/' + input + '.json').then(sentdata => withSentences(sentdata))
+        d3.json('updatedsentdata4/' + input + '.json').then(sentdata => withSentences(sentdata))
 
         function withSentences(sentencedata) {
             d3.selectAll('.verblabel').text(input)
