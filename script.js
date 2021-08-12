@@ -69,6 +69,7 @@ function chart(csv) {
     function update(input, speed, selectedCX) {
         d3.json('common_constructions1.json').then(cxdata => build_cxx(cxdata))
         function build_cxx(cxdata) {
+            console.log()
             $('#usecase').text(cxdata[0][input])
             // cxdata[0][input].forEach(function(cx,i) {
             //     $('#use'+i).text(cx['cx'] + ' (' + cx['data']['counts'] + ')')
