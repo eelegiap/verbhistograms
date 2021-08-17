@@ -4,13 +4,8 @@
 	<title>Russian Construction Histograms</title>
 	<meta charset="utf-8">
 	<script src="https://d3js.org/d3.v5.min.js"></script>
-	<!-- Latest compiled and minified CSS -->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-	<!-- jQuery library -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-	<!-- Latest compiled JavaScript -->
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-	
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 	<style>
 		body {
 			padding: 30px;
@@ -39,6 +34,11 @@
 		.legend, rect {
 			cursor: pointer
 		}
+		#sentences {
+			height: 750;
+			overflow-x: hidden;
+            overflow-y: auto;
+		}
 	</style>
 </head>
 
@@ -51,10 +51,27 @@
 			<select id="verb"></select>
 			<button type="button" id='randomize'>Randomize verb</button>
 
-			<p style='padding-top: 20; font-weight: bold'>Most common uses: <span id='usecase'></span></p>
-			<!-- <p id='use0'></p>
-			<p id='use1'></p>
-			<p id='use2'></p> -->
+			<div class='border' style='padding-left: 20; margin-top:10'>
+				<p style='padding-top: 20; font-weight: bold'>Most common construction (aggregate):</p>
+				<p id='usecase'></p>
+			</div>
+
+			<div class="accordion" id="accordionExample">
+				<div class="accordion-item">
+					<h2 class="accordion-header" id="headingTwo" >
+					<button class="accordion-button collapsed" style='font-weight: bold;' type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+						Other common use cases
+					</button>
+					</h2>
+					<div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+					<div class="accordion-body">
+						<p id='use0'>[ NOM + думать ]</p>
+						<p id='use1'>[ думать + о/об + LOC ]</p>
+						<p id='use2'>[ NOM + думать + , что ]</p>
+					</div>
+					</div>
+				</div>
+			</div>
 			<svg id="chart" width="750" height="500"></svg>
 
 			<input type="checkbox" id="sort" style='display: none;'>

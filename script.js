@@ -1,4 +1,4 @@
-d3.csv('8-11-21csvdata.csv').then(d => chart(d))
+d3.csv('8-16-21csvdata.csv').then(d => chart(d))
 
 function chart(csv) {
     // Define the div for the tooltip
@@ -48,7 +48,7 @@ function chart(csv) {
         .attr("class", "y-axis")
 
 
-    var startingverb = 'помочь'
+    var startingverb = 'думать'
     d3.select('#verb').property('value', startingverb);
     // write the graph!!!
     update(startingverb, 0, false)
@@ -70,13 +70,13 @@ function chart(csv) {
         d3.json('common_constructions1.json').then(cxdata => build_cxx(cxdata))
         function build_cxx(cxdata) {
             console.log()
-            $('#usecase').text(cxdata[0][input])
+            d3.select('#usecase').text('[ '+cxdata[0][input]+' ]')
             // cxdata[0][input].forEach(function(cx,i) {
             //     $('#use'+i).text(cx['cx'] + ' (' + cx['data']['counts'] + ')')
             // })
         }
 
-        d3.json('sentdata6/' + input + '.json').then(sentdata => withSentences(sentdata))
+        d3.json('sentdata8/' + input + '.json').then(sentdata => withSentences(sentdata))
 
         function withSentences(sentencedata) {
             d3.selectAll('.verblabel').text(input)
