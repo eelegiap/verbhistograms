@@ -420,6 +420,26 @@ x
 }
 
 $(document).ready(function() {
-    $("#verb").select2();
+    // $("#verb").select2();
+    var prefixSorter = function(results) {
+        if (!results || results.length == 0)
+          return results
+      
+        // Find the open select2 search field and get its value
+        var term = document.querySelector('.select2-search__field').value.toLowerCase()
+
+        if (term.length == 0)
+          return results
+      
+        return results.sort(function(a, b) {
+          aHasPrefix = a.text.toLowerCase().indexOf(term) == 0
+          bHasPrefix = b.text.toLowerCase().indexOf(term) == 0
+      
+          return bHasPrefix - aHasPrefix // If one is prefixed, push to the top. Otherwise, no sorting.
+        })
+      }
+      
+      $('#verb').select2({ sorter: prefixSorter })
+
     d3.csv('8-16-21csvdata.csv').then(d => chart(d))
 })
