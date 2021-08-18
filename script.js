@@ -75,7 +75,11 @@ function chart(csv) {
             var data = cxdata[0][input]
 
             d3.select('#aggregate').text('[ '+data.aggregate+' ]')
-
+            
+            d3.select('#use0').text(' ')
+            d3.select('#use1').text(' ')
+            d3.select('#use2').text(' ')
+            
             if (data.separated.length == 0) {
                 d3.select('#use0').text('Not Enough Data')
                 d3.select('#use1').text(' ')
