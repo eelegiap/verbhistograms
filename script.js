@@ -1,4 +1,4 @@
-d3.csv('8-16-21csvdata.csv').then(d => chart(d))
+
 
 function chart(csv) {
     // Define the div for the tooltip
@@ -53,27 +53,56 @@ function chart(csv) {
     // write the graph!!!
     update(startingverb, 0, false)
 
-    var select = d3.select("#verb")
-        .on("change", function () {
+    $('#verb').on('select2:select', function (e) {
+        console.log($('#verb').select2('data'))
             update(this.value, 750, false)
-        })
+      });
+
     d3.select('#randomize').on('click', function () {
         var randomIndex = Math.floor(Math.random() * verb.length)
         var randomVerb = verb[randomIndex]
-        d3.select('#verb').property('value', randomVerb);
+        // d3.select('#verb').property('value', randomVerb);
+        $('#verb').val(randomVerb)
+        $('#verb').trigger('change');
         update(randomVerb, 750, false)
     })
 
 
     // update function // 
     function update(input, speed, selectedCX) {
-        d3.json('common_constructions1.json').then(cxdata => build_cxx(cxdata))
+        d3.json('common_constructions_8-17.json').then(cxdata => build_cxx(cxdata))
         function build_cxx(cxdata) {
-            console.log()
-            d3.select('#usecase').text('[ '+cxdata[0][input]+' ]')
-            // cxdata[0][input].forEach(function(cx,i) {
-            //     $('#use'+i).text(cx['cx'] + ' (' + cx['data']['counts'] + ')')
-            // })
+            var data = cxdata[0][input]
+
+            d3.select('#aggregate').text('[ '+data.aggregate+' ]')
+
+            if (data.separated.length == 0) {
+                d3.select('#use0').text('Not Enough Data')
+                d3.select('#use1').text(' ')
+                d3.select('#use2').text(' ')
+            }
+            data.separated.forEach(function(cx,i) {
+                d3.select('#use'+i).text(cx[1] + ' (' + cx[0] + ')')
+            })
+            d3.selectAll('.related').remove()
+
+            if (data.relatedwords.length == 0) {
+                d3.select('#wordcol0')
+                .append('p').attr('class','related').text('Not Enough Data')
+            }
+            data.relatedwords.forEach(function(word, i) {
+                if (i < 10) {
+                    d3.select('#wordcol0')
+                        .append('p')
+                        .attr('class','related')
+                        .text(word[1] + ' (' + word[0] + ')')
+                } else {
+                    d3.select('#wordcol1')
+                    .append('p')
+                    .attr('class','related')
+                    .text(word[1] + ' (' + word[0] + ')')
+                }
+            })
         }
 
         d3.json('sentdata8/' + input + '.json').then(sentdata => withSentences(sentdata))
@@ -380,8 +409,13 @@ x
                 d3.selectAll('.' + thisclass).attr('opacity', 1)
             }
             function formatKeyClass(key) {
-                return key.replaceAll('/','').replaceAll('+', '').replaceAll(' ', '').toLowerCase()
+                return key.replaceAll('/','').replaceAll('+', '').replaceAll(' ', '').replaceAll(',','').toLowerCase()
             }
         }
     }
 }
+
+$(document).ready(function() {
+    $("#verb").select2();
+    d3.csv('8-16-21csvdata.csv').then(d => chart(d))
+})
